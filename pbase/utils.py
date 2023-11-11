@@ -106,44 +106,28 @@ def atualizar():
                     print(f"O valor atual de {field_names[i]} é {produto[0][i]}\nVocê deseja altera-lo? (Sim / Não)")
                     choice = input()
                     if(choice=='Não'):
-                        data.append(field_types[i])
+                        data.append(produto[0][i])
                     elif(choice=='Sim'):
                         print(f"Informe o novo falor de {field_names[i]}")
                         data.append(input())
         print(data)
-        newNames = field_names[1:(len(field_names)-1)]
+        newNames = field_names[1:len(field_names)]
         print(len(newNames))
+        print(newNames)
         print(len(data))
         for i in range(len(data)):
-            sql = sql+str(newNames[i])+" = "+str(data[i])
+            sql = sql+str(newNames[i])+" = "+str(data[i]+", ")
             if(i==len(data)-1):
-                sql = f" where id = {id}"
-        print(sql)
+                sql = sql[:-2]+f" where id = {id}"
+        cursor.execute(sql)
+        conn.commit()
+        if cursor.rowcount == 1:
+            print(f"O {banco} foi atualizado!!")
+        else:
+            print(f"Erro ao atualizar o {banco}")
+        desconectar(conn)
     else:
         print("--- Não foi encontrado dados nesta tabela! ---")
-    
-    print("--- Qual campo você deseja alterar? ---\n\t 1 -> Discriminação\n\t 2 -> Preço unitário\n\t 3 -> Ambos")
-    cod = int(input("Qual sua escolha? "))
-    match cod:
-        case 1:
-            discriminacao = input("Informe a nova discriminação do produto: ")
-            id = int(input("Informe o id do produto que deseja alterar: "))
-            cursor.execute(f"UPDATE produto set discrimanacao = {discriminacao} WHERE id = {id}")
-        case 2:
-            preco = float(input("Digite o novo valor unitário do produto: "))
-            id = int(input("Informe o id do produto que deseja alterar: "))
-            cursor.execute(f"UPDATE produto set p_unitario = {preco} WHERE id = {id}")
-        case 3:
-            discriminacao = input("Informe a nova discriminação do produto: ")
-            preco = float(input("Digite o novo valor unitário do produto: "))
-            id = int(input("Informe o id do produto que deseja alterar: "))
-            cursor.execute(f"UPDATE produto set discrimanacao = {discriminacao},p_unitario = {preco} WHERE id = {id}")
-    conn.commit()
-    if cursor.rowcount == 1:
-        print(f"O produto foi atualizado!!")
-    else:
-        print(f"Erro ao atualizar o produto")
-    desconectar(conn)
 
 def deletar():
     """
